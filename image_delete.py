@@ -27,8 +27,8 @@ NICE TO HAVE:
 """
 
 import argparse
-import os
 import sys
+from os import path
 from shutil import copy
 
 import numpy as np
@@ -38,32 +38,44 @@ from imutils import paths
 
 class ImageDelete():
     def __init__(self):
-        self.root_path = "/media/florestan/BACKUP/FileHistory/Florestan/FLO_MACHINE/Data/E/Pictures/IPHONE/2013"
         self.trash_path = "./trash/"
-        self.threshold = 100
-        self.upper_brightness = 0
-        self.lower_brightness = 255
+        self.root_path = None
+        self.threshold = None
+        self.upper_brightness = None
+        self.lower_brightness = None
+        self.path_as_string = None
 
         print("\n")
-        print("=========== IMAGE-DELETE CLI ==============")
+        print("============== IMAGE-DELETE CLI ==============")
         print("\n")
-        print("Welcome to the IMAGE-DELETE CLI.\n\nBased on your input we will find blurry\nand under / overexposed images.\n\nFree up some disk space by deleting them.")
+        print("Welcome to the IMAGE-DELETE CLI. Based on your input blurry and under / overexposed images will be deleted and free up some disk space by deleting them.")
         print("\n")
-        print("Lets get started...\n")
+        print("Lets get started...")
 
     def get_args(self):
         while True:
 
-            print("============ SELECT FOLDER 1/4 =============")
+            try:
+                print("\n")
+                print("============== 1/4 SELECT FOLDER")
+                print("\n")
+                self.root_path = input(
+                    "Please provide the root path of the folder that contains the pictures you want to check: ")
 
-            root_path = input(
-                "Please provide the root path of the folder \nthat contains the pictures you want to check: ")
+                if not path.isdir(self.root_path):
+                    raise ValueError
+
+            except ValueError:
+                print("\n")
+                print("ERROR! This is not a number. Starting over...")
+                print("\n")
+                continue
 
             try:
                 print("\n")
-                print("============ ENTER SHARPNESS THRESHOLD 2/4 =============")
+                print("============== 2/4 ENTER SHARPNESS THRESHOLD")
                 print("\n")
-                print("Please enter the sharpness threshold.\nNote: The lower the number, the more tolerant\nthe selection, i.e. blurier pictures will make it\nthrough the filter.\n")
+                print("Please enter the sharpness threshold. Note: The lower the number, the more tolerant the selection, i.e. blurier pictures will make it through the filter.")
                 self.threshold = int(input("Sharpness threshold: "))
 
             except ValueError:
@@ -74,10 +86,10 @@ class ImageDelete():
 
             try:
                 print("\n")
-                print("============ ENTER BRIGHTNESS - LOWER BOUND 3/4 =============")
+                print("============== 3/4 ENTER BRIGHTNESS - LOWER BOUND")
                 print("\n")
-                print("Please enter the upper bound of the brighntess\nthat is still acceptable for you.\nNote: Lowest value here is 0. The lower the number,\nthe darker the pictures will be that make it\nthrough the filter.\n")
-                self.threshold = int(input("Brightness - lower bound: "))
+                print("Please enter the upper bound of the brighntess that is still acceptable for you. Note: Lowest value here is 0. The lower the number, the darker the pictures will be that make it through the filter")
+                self.lower_brightness = int(input("Brightness - lower bound: "))
 
             except ValueError:
                 print("\n")
@@ -87,10 +99,10 @@ class ImageDelete():
 
             try:
                 print("\n")
-                print("============ ENTER BRIGHTNESS: UPPER BOUND 3/4 =============")
+                print("============== 4/4 ENTER BRIGHTNESS: UPPER BOUND")
                 print("\n")
-                print("Please enter the upper bound of the brighntess\nthat is still acceptable for you.\nNote: Max value here is 255. The lower the number,\nthe darker the pictures will be that make it\nthrough the filter.\n")
-                self.threshold = int(input("Brightness - upper bound: "))
+                print("Please enter the upper bound of the brighntess\nthat is still acceptable for you.\nNote: Max value here is 255. The higher the number,\nthe brighter the pictures will be that make it\nthrough the filter.\n")
+                self.upper_brightness = int(input("Brightness - upper bound: "))
 
             except ValueError:
                 print("\n")
@@ -100,22 +112,15 @@ class ImageDelete():
 
             else:
                 print("\n")
-                print("Thank you for entering all the information!")
-                print(f"Folder:{root_path}")
-                print(f"Sharpness Threshold:{self.threshold}")
-                print(f"Sharpness Threshold:{self.upper_brightness}")
-                print(f"Sharpness Threshold:{self.lower_brightness}")
+                print("============== ALL SET!")
+                print("\n")
+                print(f"Folder:{self.root_path}")
+                print(f"Sharpness Threshold:\t{self.threshold}")
+                print(f"Brightness Upper:\t{self.upper_brightness}")
+                print(f"Brightness Lower:\t{self.lower_brightness}")
                 print("\n")
                 print("Searching for images...")
                 break
-
-        # validation!
-        # ap = argparse.ArgumentParser()
-        # ap.add_argument("-i", "--images", required=True,
-        #                 help="path to input directory of images")
-        # ap.add_argument("-t", "--threshold", type=float, default=100.0,
-        #                 help="focus measures that fall below this value will be considered 'blurry'")
-        # args = vars(ap.parse_args())
 
     def variance_of_laplacian(self, image):
         """
@@ -131,10 +136,10 @@ class ImageDelete():
     def is_brightness_bad(self, gray):
         return np.mean(gray) > 240 or np.mean(gray) < 50
 
-    def deleteImage(self):
-        # list_images recursively looks through root folder and finds images of all types and returns their paths
+    def deleteImages(self):
+        # 'list_images' recursively looks through root folder and finds images of all types and returns their paths
         for image_path in paths.list_images(self.root_path):
-            file_name = os.path.basename(image_path)
+            file_name = path.basename(image_path)
             destination = self.trash_path + file_name
 
             img = imread(image_path)
@@ -152,4 +157,4 @@ class ImageDelete():
 
 imageDelete = ImageDelete()
 imageDelete.get_args()
-imageDelete.deleteImage()
+imageDelete.deleteImages()
