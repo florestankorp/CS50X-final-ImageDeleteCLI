@@ -5,14 +5,7 @@
 # https://towardsdatascience.com/deep-image-quality-assessment-with-tensorflow-2-0-69ed8c32f195
 
 """
-When executed from the command line this script takes
-in a pathname of a folder with pictures in it and a threshold
-for when an image is considered too blurry (defaults to 100)
-
-It then recursively searches images in subfolders of root_path
-then loops through the images, calculates sharpness and
-brightness and uses these to determine wether to move the image
-or ignore it.
+This CLI takes in a path, brightness and sharpness thresholds and then recursively searches images in the provided folder, evaluates the file and either keeps the ones of acceptable quality or moves them to the trashbin if they're not of acceptable quality.
 
 TODO:
 MVP:
@@ -51,7 +44,7 @@ class ImageDelete():
         self.lower_brightness = None
         self.path_as_string = None
         self.texts = {
-            "WELCOME": "Welcome to the IMAGE-DELETE CLI. Based on your input blurry and under- or overexposed images will be deleted. You will keep only the best pictures in terms of brightness and exposure.",
+            "WELCOME": "Welcome to the IMAGE-DELETE CLI. This CLI takes in a path, brightness and sharpness thresholds, recursively looks for images in the provided folder and deletes the ones that aren't good enough.",
             "PROVIDE_PATH": "Please provide the root path of the folder that contains the pictures you want to check: ",
             "UPPER_BOUND": "Please enter the upper bound of the brighntess that is still acceptable for you. Note: Max value here is 255. The higher the number, the brighter the pictures will be that make it through the filter.",
             "LOWER_BOUND": "Please enter the lower bound of the brighntess that is still acceptable for you. Note: Lowest value here is 0. The lower the number, the darker the pictures will be that make it through the filter.",
@@ -59,9 +52,18 @@ class ImageDelete():
         }
         self.titles = {
             "WELCOME": """
+============================================================
+
 ╦╔╦╗╔═╗╔═╗╔═╗  ╔╦╗╔═╗╦  ╔═╗╔╦╗╔═╗  ╔═╗╦  ╦
 ║║║║╠═╣║ ╦║╣    ║║║╣ ║  ║╣  ║ ║╣   ║  ║  ║
 ╩╩ ╩╩ ╩╚═╝╚═╝  ═╩╝╚═╝╩═╝╚═╝ ╩ ╚═╝  ╚═╝╩═╝╩
+
+============================================================
+
+Florestan Korp (2020)
+florestankorp@gmail.com
+
+============================================================
             """,
             "SELECT_FOLDER": "1/4 SELECT FOLDER",
             "SHARPNESS_THRESHOLD": "2/4 ENTER SHARPNESS THRESHOLD",
