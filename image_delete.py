@@ -5,17 +5,13 @@
 # https://towardsdatascience.com/deep-image-quality-assessment-with-tensorflow-2-0-69ed8c32f195
 
 """
-This CLI takes in a path, brightness and sharpness thresholds and then recursively searches images in the provided folder, evaluates the file and either keeps the ones of acceptable quality or moves them to the trashbin if they're not of acceptable quality.
+This CLI takes in a path, brightness and sharpness thresholds and then recursively searches images in the provided folder, evaluates the file and either keeps the ones of acceptable quality or moves them to the trashbin if they're not good enough.
 
 TODO:
-MVP:
-[] validate number input of brightness thresholds and make sure they fall in range 0 - 255
-[] ask for confirmation before deleting pics
-
 NICE TO HAVE:
 [] Try getting metadata and based on camera model determine parameters
 [] look at more advanced factors other than sharpness and brightness
-[] build interface with input for root path, porgress bar and options for threshold
+[] build interface with input for root path, porgress bar and options for threshold as GUI
 [] make installable on windows, mac and linux
 
 TEST FOLDER:
@@ -25,30 +21,32 @@ TEST FOLDER:
 import argparse
 import sys
 import textwrap
-from os import path
+from os import path, remove
 from shutil import copy
 
 import numpy as np
 from cv2 import COLOR_BGR2GRAY, CV_64F, Laplacian, cvtColor, imread
 from imutils import paths
+from send2trash import send2trash
 
 
-class ImageDelete():
+class ImageDeleteCLI():
     def __init__(self):
-        self.trash_path = "./trash/"
-
         # instatiating class attributes
         self.root_path = None
         self.threshold = None
         self.upper_brightness = None
         self.lower_brightness = None
         self.path_as_string = None
+        self.confirmation = None
+
         self.texts = {
             "WELCOME": "Welcome to the IMAGE-DELETE CLI. This CLI takes in a path, brightness and sharpness thresholds, recursively looks for images in the provided folder and deletes the ones that aren't good enough.",
             "PROVIDE_PATH": "Please provide the root path of the folder that contains the pictures you want to check: ",
             "UPPER_BOUND": "Please enter the upper bound of the brighntess that is still acceptable for you. Note: Max value here is 255. The higher the number, the brighter the pictures will be that make it through the filter.",
             "LOWER_BOUND": "Please enter the lower bound of the brighntess that is still acceptable for you. Note: Lowest value here is 0. The lower the number, the darker the pictures will be that make it through the filter.",
-            "SHARPNESS_THRESHOLD": "Please enter the sharpness threshold. Note: The lower the number, the more tolerant the selection, i.e. blurier pictures will make it through the filter."
+            "SHARPNESS_THRESHOLD": "Please enter the sharpness threshold. Note: The lower the number, the more tolerant the selection, i.e. blurier pictures will make it through the filter.",
+            "CONFIRMATION": "You have entered all the required information. Please confirm that you want to proceed. Note: Rejected images will be moved to the trashbin. You can review them and if necessary restore them from there."
         }
         self.titles = {
             "WELCOME": """
@@ -68,7 +66,8 @@ florestankorp@gmail.com
             "SELECT_FOLDER": "1/4 SELECT FOLDER",
             "SHARPNESS_THRESHOLD": "2/4 ENTER SHARPNESS THRESHOLD",
             "LOWER_BOUND": "3/4 ENTER BRIGHTNESS - LOWER BOUND",
-            "UPPER_BOUND": "4/4 ENTER BRIGHTNESS: UPPER BOUND",
+            "UPPER_BOUND": "4/4 ENTER BRIGHTNESS - UPPER BOUND",
+            "CONFIRMATION": "CONFIRMATION",
         }
 
         self.print_formatted(self.titles["WELCOME"],
@@ -77,12 +76,13 @@ florestankorp@gmail.com
         print("Lets get started...")
 
     def get_input(self):
-        self.get_Path()
+        self.get_path()
         self.get_sharpness()
         self.get_lower()
         self.get_upper()
+        self.get_confirmation()
 
-    def get_Path(self):
+    def get_path(self):
         while True:
             try:
                 self.print_formatted(self.titles["SELECT_FOLDER"],
@@ -130,6 +130,7 @@ florestankorp@gmail.com
                 break
 
     def get_upper(self):
+
         while True:
             try:
                 self.print_formatted(self.titles["UPPER_BOUND"],
@@ -143,17 +144,42 @@ florestankorp@gmail.com
                 continue
 
             else:
+                break
+
+    def get_confirmation(self):
+        while True:
+            try:
+                self.print_formatted(self.titles["CONFIRMATION"],
+                                     self.texts["CONFIRMATION"])
+                self.print_summary()
+                self.confirmation = input("Are you sure you want to proceed (y/n): ")
+
+                if (
+                        not self.confirmation.isalpha() and
+                        not self.confirmation == 'y' and
+                        not self.confirmation == 'n'
+                ):
+                    raise ValueError
+
+                if self.confirmation == 'n':
+                    print("Goodbye!")
+                    sys.exit(1)
+
+            except ValueError:
+                self.print_error("input")
+                continue
+
+            else:
                 print("\n")
-                print(" ALL SET! ".center(60, '='))
-                print("\n")
-                print(f"Folder:{self.root_path}")
-                print(f"Sharpness Threshold:\t{self.threshold}")
-                print(f"Brightness Upper:\t{self.upper_brightness}")
-                print(f"Brightness Lower:\t{self.lower_brightness}")
-                print("\n")
-                # are you sure you want to proceed? Note: deleted pictures are moved to your trash. You can restore them from there.
                 print(" DELETING IMAGES ".center(60, '='))
                 break
+
+    def print_summary(self):
+        print(f"Folder:\t\t\t{self.root_path}")
+        print(f"Sharpness Threshold:\t{self.threshold}")
+        print(f"Brightness Upper:\t{self.upper_brightness}")
+        print(f"Brightness Lower:\t{self.lower_brightness}")
+        print("\n")
 
     def print_formatted(self, title, text=""):
         spaced_title = " " + title + " "
@@ -197,8 +223,7 @@ florestankorp@gmail.com
 
             if self.is_unsharp(gray) and self.is_brightness_bad(gray):
                 try:
-                    # TODO: replace copy with move and destination should be trash-bin
-                    copy(image_path, destination)
+                    send2trash(image_path)
                     print("Image deleted")
                 except FileNotFoundError as error:
                     print(error)
@@ -207,6 +232,6 @@ florestankorp@gmail.com
         print("Done!")
 
 
-imageDelete = ImageDelete()
-imageDelete.get_input()
-imageDelete.deleteImages()
+imageDeleteCLI = ImageDeleteCLI()
+imageDeleteCLI.get_input()
+imageDeleteCLI.deleteImages()
