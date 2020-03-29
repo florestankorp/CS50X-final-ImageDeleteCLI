@@ -77,6 +77,12 @@ florestankorp@gmail.com
         print("Lets get started...")
 
     def get_input(self):
+        self.get_Path()
+        self.get_sharpness()
+        self.get_lower()
+        self.get_upper()
+
+    def get_Path(self):
         while True:
             try:
                 self.print_formatted(self.titles["SELECT_FOLDER"],
@@ -90,6 +96,11 @@ florestankorp@gmail.com
                 self.print_error("path")
                 continue
 
+            else:
+                break
+
+    def get_sharpness(self):
+        while True:
             try:
                 self.print_formatted(self.titles["SHARPNESS_THRESHOLD"],
                                      self.texts["SHARPNESS_THRESHOLD"])
@@ -99,6 +110,11 @@ florestankorp@gmail.com
                 self.print_error("number")
                 continue
 
+            else:
+                break
+
+    def get_lower(self):
+        while True:
             try:
                 self.print_formatted(self.titles["LOWER_BOUND"],
                                      self.texts["LOWER_BOUND"])
@@ -110,6 +126,11 @@ florestankorp@gmail.com
                 self.print_error("number")
                 continue
 
+            else:
+                break
+
+    def get_upper(self):
+        while True:
             try:
                 self.print_formatted(self.titles["UPPER_BOUND"],
                                      self.texts["UPPER_BOUND"])
@@ -148,7 +169,7 @@ florestankorp@gmail.com
 
     def print_error(self, type):
         print("\n")
-        print("\033[91m" + "ERROR! This is not a valid {}. Starting over...".format(type))
+        print("\033[91m" + "ERROR! Invalid {}. Please try again...".format(type))
         print("\n")
 
     def calculate_variance_of_laplacian(self, image):
