@@ -216,8 +216,6 @@ florestankorp@gmail.com
         # 'list_images' recursively looks through root folder and finds images of all types and returns their paths
         for image_path in paths.list_images(self.root_path):
             file_name = path.basename(image_path)
-            destination = self.trash_path + file_name
-
             img = imread(image_path)
             gray = cvtColor(img, COLOR_BGR2GRAY)
 
