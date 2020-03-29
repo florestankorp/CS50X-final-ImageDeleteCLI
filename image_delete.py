@@ -24,10 +24,14 @@ NICE TO HAVE:
 - look at more advanced factors other than sharpness and brightness
 - build interface with input for root path, porgress bar and options for threshold
 - make installable on windows, mac and linux
+
+TEST FOLDER:
+/media/florestan/BACKUP/FileHistory/Florestan/FLO_MACHINE/Data/E/Pictures/IPHONE/2013
 """
 
 import argparse
 import sys
+import textwrap
 from os import path
 from shutil import copy
 
@@ -39,90 +43,109 @@ from imutils import paths
 class ImageDelete():
     def __init__(self):
         self.trash_path = "./trash/"
+
+        # instatiating class attributes
         self.root_path = None
         self.threshold = None
         self.upper_brightness = None
         self.lower_brightness = None
         self.path_as_string = None
+        self.texts = {
+            "WELCOME": "Welcome to the IMAGE-DELETE CLI. Based on your input blurry and under- or overexposed images will be deleted. You will keep only the best pictures in terms of brightness and exposure.",
+            "PROVIDE_PATH": "Please provide the root path of the folder that contains the pictures you want to check: ",
+            "UPPER_BOUND": "Please enter the upper bound of the brighntess that is still acceptable for you. Note: Max value here is 255. The higher the number, the brighter the pictures will be that make it through the filter.",
+            "LOWER_BOUND": "Please enter the lower bound of the brighntess that is still acceptable for you. Note: Lowest value here is 0. The lower the number, the darker the pictures will be that make it through the filter.",
+            "SHARPNESS_THRESHOLD": "Please enter the sharpness threshold. Note: The lower the number, the more tolerant the selection, i.e. blurier pictures will make it through the filter."
+        }
+        self.titles = {
+            "WELCOME": """
+╦╔╦╗╔═╗╔═╗╔═╗  ╔╦╗╔═╗╦  ╔═╗╔╦╗╔═╗  ╔═╗╦  ╦
+║║║║╠═╣║ ╦║╣    ║║║╣ ║  ║╣  ║ ║╣   ║  ║  ║
+╩╩ ╩╩ ╩╚═╝╚═╝  ═╩╝╚═╝╩═╝╚═╝ ╩ ╚═╝  ╚═╝╩═╝╩
+            """,
+            "SELECT_FOLDER": "1/4 SELECT FOLDER",
+            "SHARPNESS_THRESHOLD": "2/4 ENTER SHARPNESS THRESHOLD",
+            "LOWER_BOUND": "3/4 ENTER BRIGHTNESS - LOWER BOUND",
+            "UPPER_BOUND": "4/4 ENTER BRIGHTNESS: UPPER BOUND",
+        }
 
-        print("\n")
-        print("============== IMAGE-DELETE CLI ==============")
-        print("\n")
-        print("Welcome to the IMAGE-DELETE CLI. Based on your input blurry and under / overexposed images will be deleted and free up some disk space by deleting them.")
-        print("\n")
+    def get_input(self):
+        self.print_formatted(self.titles["WELCOME"],
+                             self.texts["WELCOME"])
+
         print("Lets get started...")
 
-    def get_args(self):
         while True:
-
             try:
-                print("\n")
-                print("============== 1/4 SELECT FOLDER")
-                print("\n")
-                self.root_path = input(
-                    "Please provide the root path of the folder that contains the pictures you want to check: ")
+                self.print_formatted(self.titles["SELECT_FOLDER"],
+                                     self.texts["PROVIDE_PATH"])
+                self.root_path = input()
 
                 if not path.isdir(self.root_path):
                     raise ValueError
 
             except ValueError:
-                print("\n")
-                print("ERROR! This is not a number. Starting over...")
-                print("\n")
+                self.print_error("path")
                 continue
 
             try:
-                print("\n")
-                print("============== 2/4 ENTER SHARPNESS THRESHOLD")
-                print("\n")
-                print("Please enter the sharpness threshold. Note: The lower the number, the more tolerant the selection, i.e. blurier pictures will make it through the filter.")
+                self.print_formatted(self.titles["SHARPNESS_THRESHOLD"],
+                                     self.texts["SHARPNESS_THRESHOLD"])
                 self.threshold = int(input("Sharpness threshold: "))
 
             except ValueError:
-                print("\n")
-                print("ERROR! This is not a number. Starting over...")
-                print("\n")
+                self.print_error("number")
                 continue
 
             try:
-                print("\n")
-                print("============== 3/4 ENTER BRIGHTNESS - LOWER BOUND")
-                print("\n")
-                print("Please enter the upper bound of the brighntess that is still acceptable for you. Note: Lowest value here is 0. The lower the number, the darker the pictures will be that make it through the filter")
+                self.print_formatted(self.titles["LOWER_BOUND"],
+                                     self.texts["LOWER_BOUND"])
                 self.lower_brightness = int(input("Brightness - lower bound: "))
 
             except ValueError:
-                print("\n")
-                print("ERROR! This is not a number. Starting over...")
-                print("\n")
+                self.print_error("number")
                 continue
 
             try:
-                print("\n")
-                print("============== 4/4 ENTER BRIGHTNESS: UPPER BOUND")
-                print("\n")
-                print("Please enter the upper bound of the brighntess\nthat is still acceptable for you.\nNote: Max value here is 255. The higher the number,\nthe brighter the pictures will be that make it\nthrough the filter.\n")
+                self.print_formatted(self.titles["UPPER_BOUND"],
+                                     self.texts["UPPER_BOUND"])
                 self.upper_brightness = int(input("Brightness - upper bound: "))
 
             except ValueError:
-                print("\n")
-                print("ERROR! This is not a number. Starting over...")
-                print("\n")
+                self.print_error("number")
                 continue
 
             else:
                 print("\n")
-                print("============== ALL SET!")
+                print(" ALL SET! ".center(60, '='))
                 print("\n")
                 print(f"Folder:{self.root_path}")
                 print(f"Sharpness Threshold:\t{self.threshold}")
                 print(f"Brightness Upper:\t{self.upper_brightness}")
                 print(f"Brightness Lower:\t{self.lower_brightness}")
                 print("\n")
-                print("Searching for images...")
+                # are you sure you want to proceed? Note: deleted pictures are moved to your trash. You can restore them from there.
+                print(" DELETING IMAGES ".center(60, '='))
                 break
 
-    def variance_of_laplacian(self, image):
+    def print_formatted(self, title, text=""):
+        spaced_title = " " + title + " "
+        print("\n")
+        print('\033[95m' + spaced_title.center(60, '='))
+        print("\n")
+
+        lines = textwrap.wrap(text, width=60)
+
+        for line in lines:
+            print(line)
+        print("\n")
+
+    def print_error(self, type):
+        print("\n")
+        print("\033[91m" + "ERROR! This is not a valid {}. Starting over...".format(type))
+        print("\n")
+
+    def calculate_variance_of_laplacian(self, image):
         """
         The function calculates the Laplacian of the source image. It highlights regions of rapid intensity change and is therefore often used for edge detection.
         """
@@ -130,7 +153,7 @@ class ImageDelete():
         return Laplacian(image, CV_64F).var()
 
     def is_unsharp(self, gray):
-        score = self.variance_of_laplacian(gray)
+        score = self.calculate_variance_of_laplacian(gray)
         return score < self.threshold
 
     def is_brightness_bad(self, gray):
@@ -154,7 +177,9 @@ class ImageDelete():
                     print(error)
                     sys.exit(1)
 
+        print("Done!")
+
 
 imageDelete = ImageDelete()
-imageDelete.get_args()
+imageDelete.get_input()
 imageDelete.deleteImages()
