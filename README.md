@@ -3,7 +3,7 @@ The Image-Delete-CLI saves me time and helps free up some disk space by checking
 
 My focus for this assignment was to create a useful, robust tool with pleasant user experience, graceful error handling, written in a way that is easy to share and maintain.
 
-[Screenshot - Happy Flow:](./screenshots/hapy_flow.png)
+[Screenshot - Happy Flow](./screenshots/hapy_flow.png)
 
 ## Design
 This programme is written in Python3 using a number of third party libraries for image evaluation, file-system operations and output formatting.
