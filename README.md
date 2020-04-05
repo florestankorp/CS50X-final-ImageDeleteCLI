@@ -1,12 +1,13 @@
 # IMAGE-DELETE CLI
-The Image-Delete-CLI saves me time and helps free up some disk space by checking brightness and sharpness of images in a designated folder and gets rid of the ones that don't fall within an acceptable range of the provided parameters.
+The Image-Delete-CLI checks brightness and sharpness of images in a designated folder and gets rid of the ones that don't fall within an acceptable range of the provided parameters.
 
 My focus for this assignment was to create a useful, robust tool with pleasant user experience, graceful error handling, written in a way that is easy to share and maintain.
 
 [Screenshot - Happy Flow](./screenshots/hapy_flow.png)
+You can find the video for this assignment [HERE](https://youtu.be/DLuNhrOeyRk)
 
 ## Design
-This programme is written in Python3 using a number of third party libraries for image evaluation, file-system operations and output formatting.
+This program is written in Python3 using a number of third party libraries for image evaluation, file-system operations and output formatting.
 
 ### Requirements
 * opencv-python (cv2)
