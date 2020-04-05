@@ -4,6 +4,7 @@ The Image-Delete-CLI checks brightness and sharpness of images in a designated f
 My focus for this assignment was to create a useful, robust tool with pleasant user experience, graceful error handling, written in a way that is easy to share and maintain.
 
 [Screenshot - Happy Flow](./screenshots/hapy_flow.png)
+
 You can find the video for this assignment [HERE](https://youtu.be/DLuNhrOeyRk)
 
 ## Design
