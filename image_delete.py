@@ -57,6 +57,8 @@ class ImageDeleteCLI():
 ╩╩ ╩╩ ╩╚═╝╚═╝  ═╩╝╚═╝╩═╝╚═╝ ╩ ╚═╝  ╚═╝╩═╝╩
 
 ============================================================
+Final assignment for 
+Harvard's CS50x: Introduction to Computer Science by
 
 Florestan Korp (2020)
 florestankorp@gmail.com
@@ -77,9 +79,9 @@ florestankorp@gmail.com
 
     def get_input(self):
         self.get_path()
-        self.get_sharpness()
-        self.get_lower()
-        self.get_upper()
+        self.get_threshold()
+        self.get_lower_bound()
+        self.get_upper_bound()
         self.get_confirmation()
 
     def get_path(self):
@@ -99,7 +101,7 @@ florestankorp@gmail.com
             else:
                 break
 
-    def get_sharpness(self):
+    def get_threshold(self):
         while True:
             try:
                 self.print_formatted(self.titles["SHARPNESS_THRESHOLD"],
@@ -113,7 +115,7 @@ florestankorp@gmail.com
             else:
                 break
 
-    def get_lower(self):
+    def get_lower_bound(self):
         while True:
             try:
                 self.print_formatted(self.titles["LOWER_BOUND"],
@@ -129,7 +131,7 @@ florestankorp@gmail.com
             else:
                 break
 
-    def get_upper(self):
+    def get_upper_bound(self):
 
         while True:
             try:
@@ -154,10 +156,12 @@ florestankorp@gmail.com
                 self.print_summary()
                 self.confirmation = input("Are you sure you want to proceed (y/n): ")
 
+                if (not self.confirmation.isalpha()):
+                    raise ValueError
+
                 if (
-                        not self.confirmation.isalpha() and
-                        not self.confirmation == 'y' and
-                        not self.confirmation == 'n'
+                    not self.confirmation == 'y' and
+                    not self.confirmation == 'n'
                 ):
                     raise ValueError
 
@@ -210,7 +214,8 @@ florestankorp@gmail.com
         return score < self.threshold
 
     def is_brightness_bad(self, gray):
-        return np.mean(gray) > 240 or np.mean(gray) < 50
+        # TODO: replace values with values from input
+        return np.mean(gray) > self.upper_brightness or np.mean(gray) < self.lower_brightness
 
     def deleteImages(self):
         # 'list_images' recursively looks through root folder and finds images of all types and returns their paths

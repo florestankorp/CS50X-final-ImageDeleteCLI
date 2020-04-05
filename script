@@ -1,0 +1,24 @@
+Hi everybody, Florestan here coming to you from the Netherlands.
+
+So, just picture yourself coming back from a lovely vacation, 
+you shot a million pictures and now you have to find the ones that you don't want to keep because they're too dark or unsharp. 
+
+If you're anything like me you're also constantly running out of disk space, and because stacking even more external hard-disks is not an option anymore, I decided to finally tackle this problem. 
+
+Before my work as a webdeveloper I studied photography at the Art Academy here in The Hague. I did that for four and a half years and then worked as a freelance photographer and image editor. Both jobs required me to go through hundreds if not thousands of pictures a day and building a huge library of image files which are just sitting on my hard disk, taking up space. 
+
+And because going through all of my images is a time-consuming proces I came up with 'Image Delete CLI', the working title of my final project for 'Harvard's CS50x: Introduction to Computer Science'.
+
+With my newly acquired superpowers of programming, I can automate the evaluation process. I did this by leveraging the power(? synonym) of Python which I used to write an algorithm that figures out when a picture is well exposed and well focussed.
+
+The Command Line Interface requests the following input from the user:
+* the path to a folder where the pictures are stored, 
+* brightness and sharpness thresholds to determine the parameters, 
+
+It then recursively looks for images in the provided folder and deletes the ones that aren't good enough according to calculations based on the parameters provided by the user.
+
+My focus for this assignmemnt was to create a useful, robust tool with pleasant user experience, graceful error handling, written in a way that is easy to share and maintain. 
+
+
+So I hope you like my project and may the best pictures survive!
+Peace!
