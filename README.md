@@ -1,4 +1,5 @@
 # IMAGE-DELETE CLI
+Final project for ['Harvard's CS50x: Introduction to Computer Science'](https://courses.edx.org/courses/course-v1:HarvardX+CS50+X/course/)
 The Image-Delete-CLI checks brightness and sharpness of images in a designated folder and gets rid of the ones that don't fall within an acceptable range of the provided parameters.
 
 My focus for this assignment was to create a useful, robust tool with pleasant user experience, graceful error handling, written in a way that is easy to share and maintain.
